@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <circle cx="64" cy="64" r="64" fill="#1e293b"/>
-  <!-- Hair backdrop -->
-  <path d="M38 48c0-18 11-30 26-30s26 12 26 30c0 14-4 28-8 34-4 6-10 8-18 8s-14-2-18-8c-4-6-8-20-8-34z" fill="#334155"/>
-  <!-- Face -->
-  <circle cx="64" cy="48" r="20" fill="#f8fafc"/>
-  <!-- Body -->
-  <path d="M64 74c-22 0-38 16-38 34 0 2 1.6 4 4 4h68c2.4 0 4-2 4-4 0-18-16-34-38-34z" fill="#f8fafc"/>
-</svg>
