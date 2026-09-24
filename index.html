@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Z Collective Pvt Ltd - NewsAgency Customer Portal & Membership Suite." />
+    <title>Z Collective Pvt Ltd | NewsAgency Customer Portal & Membership Suite</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+    <!-- Sticky App Header -->
+    <header class="app-header">
+        <div class="container header-inner">
+            <div class="brand-box">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <div>
+                    <h1 class="brand-title">Z <span>COLLECTIVE</span> PVT LTD</h1>
+                    <p class="brand-subtitle">NewsAgency Customer Portal & Membership Suite</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn btn-secondary btn-sm" id="exportJsonBtn" title="Export Backup JSON">
+                    <i class="fa-solid fa-download"></i> Export JSON <i class="fa-solid fa-lock lock-badge"></i>
+                </button>
+
+                <button class="btn btn-secondary btn-sm" id="triggerImportBtn" title="Import Backup JSON">
+                    <i class="fa-solid fa-upload"></i> Import <i class="fa-solid fa-lock lock-badge"></i>
+                </button>
+                <input type="file" id="importJsonInput" accept=".json" style="display:none;" />
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="container">
+
+        <!-- Top Navigation Bar (3 Primary Views) -->
+        <nav class="nav-tabs-bar" aria-label="Membership Suite Navigation">
+            <button class="tab-btn active" data-tab="page-scan">
+                <i class="fa-solid fa-qrcode"></i> Page 1: Staff Scan & Lookup
+            </button>
+            <button class="tab-btn" data-tab="page-setup">
+                <i class="fa-solid fa-user-plus"></i> Page 2: Member Setup & Edit
+            </button>
+            <button class="tab-btn" data-tab="page-directory">
+                <i class="fa-solid fa-address-book"></i> Page 3: Member Directory <i class="fa-solid fa-lock lock-badge"></i>
+            </button>
+        </nav>
+
+        <!-- ===================================================================
+             PAGE 1: STAFF SCANNER & QUICK LOOKUP VIEW
+             =================================================================== -->
+        <section id="page-scan" class="view-section active">
+            <div class="glass-card scan-hero-box">
+                <div class="section-header" style="text-align: center;">
+                    <h2 class="section-title" style="justify-content: center;">
+                        <i class="fa-solid fa-barcode" style="color: var(--brand-primary);"></i> NewsAgency Customer Verification
+                    </h2>
+                    <p class="section-desc">Enter or scan any customer Membership ID to instantly display their profile photo, name, and details in a popup verification modal (No password required to view details).</p>
+                </div>
+
+                <!-- Search Bar 1: Membership ID & Name Search -->
+                <form id="scanLookupForm" class="lookup-form-wrap">
+                    <div class="lookup-input-group">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="membershipIdInput" 
+                            class="lookup-input" 
+                            placeholder="Search by Membership ID (e.g. MEM-1001) or Customer Name..." 
+                            autocomplete="off"
+                            autofocus
+                        />
+                        <button type="submit" class="btn btn-primary btn-lg lookup-btn" id="verifyMemberBtn">
+                            <i class="fa-solid fa-arrow-right"></i> Verify Member
+                        </button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 1.5rem;">
+                    <button id="toggleCameraBtn" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-camera"></i> Start Camera Scanner
+                    </button>
+                </div>
+
+                <!-- Camera Stream Container -->
+                <div id="cameraScannerContainer" class="camera-scanner-container">
+                    <video id="cameraVideo" class="camera-video" autoplay playsinline muted></video>
+                    <div class="scan-overlay-line"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 2: NEW MEMBER SETUP & EDIT FORM VIEW
+             =================================================================== -->
+        <section id="page-setup" class="view-section">
+            <div class="glass-card setup-form-container">
+                <div class="section-header">
+                    <span class="form-header-badge" id="formHeaderBadge">
+                        <i class="fa-solid fa-user-gear"></i> Customer Registration & Profile Editor
+                    </span>
+                    <h2 class="section-title" id="formHeading">Register New NewsAgency Member</h2>
+                    <p class="section-desc" id="formSubheading">Only Name and Membership ID are mandatory to register. Phone number, notes, and profile picture can be added/updated later.</p>
+                </div>
+
+                <form id="memberSetupForm">
+                    <div class="form-grid">
+                        
+                        <!-- Customer Name (MANDATORY) -->
+                        <div class="form-group">
+                            <label for="setupNameInput" class="form-label">
+                                Customer Full Name <span class="req-tag">*Mandatory</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="setupNameInput" 
+                                class="input-control" 
+                                placeholder="e.g. Eleanor Vance" 
+                                required 
+                            />
+                        </div>
+
+                        <!-- Membership ID (MANDATORY) -->
+                        <div class="form-group">
+                            <label for="setupIdInput" class="form-label">
+                                Membership ID <span class="req-tag">*Mandatory</span>
+                            </label>
+                            <div class="id-input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="setupIdInput" 
+                                    class="input-control" 
+                                    placeholder="e.g. MEM-1045" 
+                                    style="text-transform: uppercase;"
+                                    required 
+                                />
+                                <button type="button" class="btn btn-secondary" id="autoGenIdBtn" title="Auto-generate a unique Membership ID">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto ID
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Phone Number (OPTIONAL) -->
+                        <div class="form-group full-width">
+                            <label for="setupPhoneInput" class="form-label">
+                                Phone Number <span class="opt-tag">(Optional - can update later)</span>
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="setupPhoneInput" 
+                                class="input-control" 
+                                placeholder="e.g. +1 (555) 019-2831" 
+                            />
+                        </div>
+
+                        <!-- Member Notes & Remarks (OPTIONAL) -->
+                        <div class="form-group full-width">
+                            <label for="setupNotesInput" class="form-label">
+                                Member Notes & Remarks <span class="opt-tag">(Optional - e.g., newspaper subscriptions, magazine reserves, staff remarks)</span>
+                            </label>
+                            <textarea 
+                                id="setupNotesInput" 
+                                class="input-control" 
+                                rows="3" 
+                                placeholder="Enter optional notes, newspaper preferences, or account remarks..."
+                            ></textarea>
+                        </div>
+
+                        <!-- Profile Photo Upload / Camera Snap (OPTIONAL) -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Customer Profile Picture <span class="opt-tag">(Optional - upload file, snap photo with camera, or choose avatar icon)</span>
+                            </label>
+
+                            <div class="photo-uploader-box" id="photoDropArea">
+                                <div class="photo-preview-wrap">
+                                    <img id="photoPreviewImg" class="avatar-preview" src="" alt="Preview" style="display: none;" />
+                                    <div id="photoPreviewPlaceholder" class="popup-avatar-placeholder" style="width: 90px; height: 90px; font-size: 2.2rem;">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </div>
+
+                                    <div class="uploader-actions">
+                                        <p style="font-weight: 600; font-size: 0.95rem;">Drag & drop photo here or click to browse</p>
+                                        <p class="uploader-desc">Supports PNG, JPG, WEBP (Max 5MB). Photo will pop up during staff scan.</p>
+                                        
+                                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('photoFileInput').click()">
+                                                <i class="fa-solid fa-upload"></i> Upload Image File
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-sm" id="captureCameraPhotoBtn">
+                                                <i class="fa-solid fa-camera"></i> Take Photo with Camera
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" id="removePhotoBtn" style="display: none;">
+                                                <i class="fa-solid fa-trash"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoFileInput" class="hidden-file-input" accept="image/*" />
+                            </div>
+
+                            <!-- Sample Quick Avatar Selector (Black & White Icons) -->
+                            <div style="margin-top: 1rem;">
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">Quick Select Black & White Avatar Icons:</p>
+                                <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                                    <button type="button" class="sample-avatar-opt btn btn-secondary btn-sm" data-src="assets/images/male_avatar.svg">
+                                        <img src="assets/images/male_avatar.svg" width="20" height="20" style="border-radius:50%;" /> Male Avatar Icon
+                                    </button>
+                                    <button type="button" class="sample-avatar-opt btn btn-secondary btn-sm" data-src="assets/images/female_avatar.svg">
+                                        <img src="assets/images/female_avatar.svg" width="20" height="20" style="border-radius:50%;" /> Female Avatar Icon
+                                    </button>
+                                    <button type="button" class="sample-avatar-opt btn btn-secondary btn-sm" data-src="assets/images/neutral_avatar.svg">
+                                        <img src="assets/images/neutral_avatar.svg" width="20" height="20" style="border-radius:50%;" /> Neutral User Icon
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Form Action Buttons -->
+                    <div class="form-actions-bar">
+                        <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitFormBtn">
+                            <i class="fa-solid fa-user-plus"></i> Register Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 3: REGISTERED MEMBERS DIRECTORY VIEW
+             =================================================================== -->
+        <section id="page-directory" class="view-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-address-book" style="color: var(--brand-primary);"></i> Registered NewsAgency Members
+                    </h2>
+                    <p class="section-desc">Password protected member directory. Enter staff password (2220) to access, view, or edit customer records.</p>
+                </div>
+
+                <div class="directory-toolbar">
+                    <div class="search-filter-box">
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input 
+                                type="text" 
+                                id="directorySearchInput" 
+                                class="input-control" 
+                                placeholder="Search by name, membership ID, phone, or notes..." 
+                            />
+                        </div>
+                    </div>
+
+                    <div class="members-stats-strip">
+                        <div class="stat-item">
+                            Total Registered: <strong id="totalMembersStat">0</strong>
+                        </div>
+                        <div class="stat-item">
+                            With Photos: <strong id="photoMembersStat">0</strong>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=page-setup]').click(); resetSetupFormToNew();">
+                            <i class="fa-solid fa-plus"></i> Add New Member
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Members Card Grid -->
+                <div id="membersGrid" class="members-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===================================================================
+         POPUP MODAL: CUSTOMER VERIFICATION DETAILS (PAGE 1 RESULT - NO PASSWORD REQUIRED TO VIEW)
+         =================================================================== -->
+    <div id="verificationModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <div class="modal-header-banner">
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-family: var(--font-heading);">
+                    <i class="fa-solid fa-shield-halved"></i> Customer Member Verification
+                </div>
+                <button id="closeVerificationModal" class="modal-close-btn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="member-popup-profile">
+                    <div class="popup-avatar-ring" id="popupAvatarRing" style="cursor: pointer;" title="Click to view full screen & zoom member photo">
+                        <img id="popupAvatarImg" class="popup-avatar-img" src="" alt="Customer Photo" style="display:none;" />
+                        <div id="popupAvatarPlaceholder" class="popup-avatar-placeholder">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="avatar-zoom-badge" title="Click to view full screen & zoom photo">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </div>
+                    </div>
+                    <h3 id="popupName" class="popup-name">Customer Name</h3>
+                    <div id="popupIdBadge" class="popup-id-badge">
+                        <i class="fa-solid fa-id-card"></i> MEM-1001
+                    </div>
+                </div>
+
+                <div class="popup-details-grid">
+                    <div class="detail-tile">
+                        <div class="detail-label"><i class="fa-solid fa-phone"></i> Phone Number</div>
+                        <div id="popupPhone" class="detail-value">+1 (555) 234-5678</div>
+                    </div>
+
+                    <div class="detail-tile">
+                        <div class="detail-label"><i class="fa-solid fa-calendar-day"></i> Join Date</div>
+                        <div id="popupJoinDate" class="detail-value">2024-01-15</div>
+                    </div>
+
+                    <div class="detail-tile">
+                        <div class="detail-label"><i class="fa-solid fa-crown"></i> Membership Tier</div>
+                        <div id="popupTier" class="detail-value">VIP Gold</div>
+                    </div>
+
+                    <div class="detail-tile">
+                        <div class="detail-label"><i class="fa-solid fa-star"></i> Loyalty Points</div>
+                        <div id="popupPoints" class="detail-value">450 pts</div>
+                    </div>
+
+                    <div class="detail-tile" style="grid-column: 1 / -1;">
+                        <div class="detail-label"><i class="fa-solid fa-note-sticky"></i> Member Notes</div>
+                        <div id="popupNotes" class="detail-value" style="font-size: 0.95rem; font-weight: 500; font-style: italic;">No notes recorded</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="document.getElementById('verificationModal').classList.remove('open');">
+                        Close
+                    </button>
+                    <button id="popupEditBtn" class="btn btn-primary" data-member-id="">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Member Profile <i class="fa-solid fa-lock lock-badge"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         POPUP MODAL: CAMERA PROFILE PHOTO CAPTURE
+         =================================================================== -->
+    <div id="cameraCaptureModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header-banner">
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-family: var(--font-heading);">
+                    <i class="fa-solid fa-camera"></i> Take Profile Photo with Camera
+                </div>
+                <button id="closeCameraCaptureModal" class="modal-close-btn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" style="text-align: center;">
+                <div style="border-radius: var(--radius-lg); overflow: hidden; background: #000; position: relative; margin-bottom: 1.25rem;">
+                    <video id="profileCameraVideo" style="width: 100%; height: 280px; object-fit: cover; display: block;" autoplay playsinline muted></video>
+                    <canvas id="profileCameraCanvas" style="display: none;"></canvas>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelCameraCaptureBtn">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" id="takeSnapshotBtn">
+                        <i class="fa-solid fa-circle-dot"></i> Snap Photo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         POPUP MODAL: SECURITY PASSWORD AUTHENTICATION
+         =================================================================== -->
+    <div id="passwordAuthModal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header-banner security-banner">
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-family: var(--font-heading);">
+                    <i class="fa-solid fa-lock"></i> Security Password Verification
+                </div>
+                <button id="closePasswordAuthModal" class="modal-close-btn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 1.25rem;">
+                    <div style="width: 56px; height: 56px; background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.75rem;">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <h3 id="authActionTitle" style="font-size: 1.2rem; font-weight: 700; font-family: var(--font-heading);">Authorized Access Required</h3>
+                    <p id="authActionDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Please enter staff password to authorize this action.</p>
+                </div>
+
+                <form id="passwordAuthForm">
+                    <div class="form-group">
+                        <label for="authPasswordInput" class="form-label">
+                            Security Password <span class="req-tag">*Required</span>
+                        </label>
+                        <div style="position: relative;">
+                            <input 
+                                type="password" 
+                                id="authPasswordInput" 
+                                class="input-control" 
+                                placeholder="Enter security password..." 
+                                required 
+                                autocomplete="current-password"
+                            />
+                            <button type="button" id="togglePasswordVisibilityBtn" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <p id="authPasswordError" style="font-size: 0.8rem; color: var(--danger-red); display: none; margin-top: 0.4rem; font-weight: 600;">
+                            <i class="fa-solid fa-circle-exclamation"></i> Incorrect password! Access denied.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer" style="margin-top: 1.5rem;">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('passwordAuthModal').classList.remove('open');">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitAuthPasswordBtn">
+                            <i class="fa-solid fa-unlock"></i> Authorize & Proceed
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         POPUP MODAL: FULL-SCREEN MEMBER PROFILE PICTURE VIEWER & ZOOM
+         =================================================================== -->
+    <div id="fullScreenImageModal" class="modal-backdrop fullscreen-image-backdrop" role="dialog" aria-modal="true">
+        <div class="fullscreen-image-wrapper">
+            <div class="fullscreen-header">
+                <div class="fullscreen-title-box">
+                    <i class="fa-solid fa-id-badge" style="color: var(--brand-primary);"></i>
+                    <span id="fullScreenMemberName" style="font-weight:700;">Member Photo</span>
+                    <span id="fullScreenMemberId" style="font-size:0.85rem; color:var(--brand-accent);">MEM-1001</span>
+                </div>
+                
+                <div class="fullscreen-toolbar">
+                    <button id="zoomOutBtn" class="btn btn-secondary btn-sm" title="Zoom Out (-)">
+                        <i class="fa-solid fa-magnifying-glass-minus"></i>
+                    </button>
+                    <span id="zoomLevelBadge" class="zoom-level-badge" style="background: rgba(255,255,255,0.1); padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; color: #fff;">100%</span>
+                    <button id="zoomInBtn" class="btn btn-secondary btn-sm" title="Zoom In (+)">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
+                    <button id="resetZoomBtn" class="btn btn-secondary btn-sm" title="Reset Zoom">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                    <button id="closeFullScreenImageModal" class="modal-close-btn" aria-label="Close full screen photo view">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="fullscreen-img-container" id="fullScreenImgContainer">
+                <img id="fullScreenImg" class="fullscreen-img-element" src="" alt="Full Screen Member Photo" />
+            </div>
+            
+            <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 0.8rem; padding: 0.5rem; margin: 0;">
+                <i class="fa-solid fa-hand-pointer"></i> Scroll mouse wheel or use +/- buttons to zoom in/out. Press ESC or click Close to return.
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <p>Z Collective Pvt Ltd NewsAgency Membership Portal &copy; 2026. Security Protected Operations.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase JS SDK (v2 CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
